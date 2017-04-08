@@ -42,7 +42,7 @@ class PacienteSearch extends Paciente
      */
     public function search($params)
     {
-        $query = Paciente::find();
+        $query = Paciente::find()->where(['idUsuario'=>Yii::$app->user->identity->id]);;
 
         // add conditions that should always apply here
 

@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use yii\helpers\ArrayHelper;
+use kartik\grid\EditableColumnAction;
 
 /**
  * CitaController implements the CRUD actions for Cita model.
@@ -28,6 +30,16 @@ class CitaController extends Controller
                 ],
             ],
         ];
+    }
+
+
+    public function actions(){
+        return ArrayHelper::merge(parent::actions(), [
+            'editcita'=>[
+                'class'=>EditableColumnAction::className(),
+                'modelClass'=>Cita::className(),
+            ]
+        ]);
     }
 
     /**
@@ -82,6 +94,7 @@ class CitaController extends Controller
     public function actionCreate()
     {
         $model = new Cita();
+        $model->scenario = 'create';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idCita]);
@@ -113,7 +126,7 @@ class CitaController extends Controller
     }
 
     public function actionCalendario(){
-        $events = Cita::find()->all();
+        $events = Cita::find()->joinWith('paciente')->where(['paciente.idUsuario' => Yii::$app->user->identity->id])->all();
 
         $tasks = [];
 
@@ -121,7 +134,8 @@ class CitaController extends Controller
             $event = new \yii2fullcalendar\models\Event();
             $event->id = $eve->idCita;
             $event->title = $eve->getPacienteNombre($eve->Paciente_idPaciente);
-            $event->start = $eve->fecha;
+            $event->start = $eve->fecha.' '.$eve->hora;
+            $event->end = $eve->fecha.' '.strtotime('+60 minute', strtotime($eve->hora));
             $tasks[] = $event; 
         }
 
@@ -175,5 +189,37 @@ class CitaController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    //Obtiene todas las citas no pagas del paciente
+    public function actionGetCita($id){
+        $citas = Cita::find()->where(['Paciente_idPaciente'=>$id, 'cancelado' => 0])->asArray()->all();
+        echo Json::encode($citas);
+    }
+
+    //cambia el valor de la cita
+    public function actionCambiaCita($id){
+        $model = $this->findModel($id);
+        $model->cancelado = 1;
+
+        $model->save();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
+
+        echo Json::encode($model);
+    }
+
+    static function actionCambiaCitaPaciente($id, $paciente){
+        $model = Cita::findOne($id);
+        $model->Paciente_idPaciente = $paciente;
+        
+        $model->save();
+        
     }
 }

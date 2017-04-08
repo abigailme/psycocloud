@@ -16,9 +16,18 @@ return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'language'=> 'es',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'encrypter'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'view' =>[
+            'class' => 'yii\web\View',
+            'theme' => [
+                'class' => 'yii\base\Theme',
+                'pathMap' => ['@app/views' => 'themes/Cardio'],
+                'baseUrl'   => 'themes/Cardio'
+            ],
+      
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
@@ -35,6 +44,13 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'encrypter' => [
+            'class'=>'\nickcv\encrypter\components\Encrypter',
+            'globalPassword'=>'mariaceleste',
+            'iv'=>'asu802mhd792jh72',
+            'useBase64Encoding'=>true,
+            'use256BitesEncoding'=>false,
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -47,6 +63,9 @@ return [
     'params' => $params,
     
     'modules' => [
+        'encrypter' => [
+            'class' => 'nickcv\encrypter\Module',
+        ],
         'gridview'=>[
             'class'=>'kartik\grid\Module',
         ],
@@ -101,6 +120,7 @@ return [
                 ]
             ]
              // other settings
-         ]
+         ],
+
     ]
 ];

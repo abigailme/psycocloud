@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'idPaciente',
+          //  'idPaciente',
             'seudonimo',
             'p_nombre',
             's_nombre',
@@ -29,6 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'cedula',
             'edad',
             'fecha_nacimiento',
+            [
+                'attribute' => 'nombre_padre',
+                'visible' => ($model->edad < 18),
+            ],
+            [
+                'attribute' => 'nombre_madre',
+                'visible' => ($model->edad < 18),
+            ],
             'email:email',
             'motivo_consulta:ntext',
             'antecedentes:ntext',

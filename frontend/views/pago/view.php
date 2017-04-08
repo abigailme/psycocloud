@@ -20,10 +20,24 @@ $this->params['breadcrumbs'][] = $this->title;
             'idFactura',
             'monto',
             'deuda',
-            'tipoPago_idtipoPago',
-            'Paciente_idPaciente',
-            'Nombre',
-            'Descripcion',
+            [   
+                'attribute' => 'tipoPago_idtipoPago',
+                'value' => $model->getPago()
+            ],
+            [
+                'attribute'=>'Paciente_idPaciente',
+                'label' => 'Nombre del Paciente',
+                'format'=>'raw',
+                'value' => Html::a($model->getNombrePaciente($model->Paciente_idPaciente), ['paciente/view', 'id' => $model->getModeloPaciente($model->Paciente_idPaciente)]) ,
+            ],
+            
+            //'Nombre',
+          //  if($model->tipoPago_idtipoPago == 2){
+            [
+                'attribute'=>'Descripcion',
+                'visible' => ($model->tipoPago_idtipoPago == 2),
+            ],
+        //    }
         ],
     ]) ?>
 

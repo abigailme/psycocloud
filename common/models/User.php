@@ -20,6 +20,12 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property integer $role
+ * @property string $nombre
+ * @property string $apellido
+ * @property string $telefono
+ * @property string $direccion
+ * 
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -185,5 +191,42 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Se conoce si el usuario es Administrador
+     */
+    static function isUserAdmin($id){
+        if(User::findOne(['id' => $id, 'status' => 10, 'role' => 1])){
+            return TRUE;
+        }
+        else{
+            return FALSE;
+        }
+    }
+
+    /**
+     * Se conoce si el usuario es Psicologo
+     */
+    static function isUserPsicologo($id){
+        if(User::findOne(['id' => $id, 'status' => 10, 'role' => 2])){
+            return TRUE;
+        }
+        else{
+            return FALSE;
+        }
+    }
+
+    /**
+    * Funcion que retorna el role del usuario para la tabla
+    */
+     //Mostrar si pago
+    public function getRole(){
+        if($this->role == 1){
+            return 'Administrador';
+        }
+        else {
+            return 'Psicologo';
+        }
     }
 }

@@ -25,17 +25,20 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
+           /* 'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'login'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
+                        
                     ],
                     [
-                        'actions' => ['logout'],
+                    	'actions' => ['login', 'error', 'logout'],
+                    	'allow' => true,
+                    	'roles' => ['?'], // " ? " for guest user
+                    ],
+                    [
+                        'actions' => ['logout', 'error'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -44,9 +47,9 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['post','get'],
                 ],
-            ],
+            ],*/
         ];
     }
 
@@ -74,6 +77,10 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionMenu(){
+        return $this->render('menu');
     }
 
     /**

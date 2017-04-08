@@ -58,7 +58,7 @@ class CitaSearch extends Cita
             return $dataProvider;
         }
 
-        $query->joinWith('paciente');
+        $query->joinWith('paciente')->where(['paciente.idUsuario' => Yii::$app->user->identity->id, 'cancelado'=>0]);
 
         // grid filtering conditions
         $query->andFilterWhere([

@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use dosamigos\datepicker\DatePicker;
+use kartik\editable\Editable;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\search\CitaSearch */
@@ -40,13 +42,37 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute'=>'Paciente_idPaciente',
                 'value' => 'paciente.p_nombre'
             ],
-            'fecha',
-            'hora',
             [
-                'class'=>'kartik\grid\EditableColumn',
-                'attribute'=>'show_up',
+                'attribute' => 'fecha',
+                'format' => 'date',
+                'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fecha',
+                    'clientOptions' => [
+                        'format' => 'yyyy-mm-dd',        
+                        'autoclose' => true,
+                        ]
+                    ]),
+            ],
+            'hora:time',
+            [
+                'class' => 'kartik\grid\EditableColumn',
+                'attribute' => 'show_up',
                 'value' => 'ShowUp',
-                'filter'=>array(0=>'No', 1 => 'Si'),
+                'filter' => array(0 => 'No', 1 => 'Si'),
+                'editableOptions' => [
+                    'header' => 'Editar Asistio',
+                    'formOptions' => ['action' => ['/cita/editcita']],
+                    'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                    'data' => [0 => 'No', 1 => 'Si'],
+                    'options' => ['class'=>'form-control', 'prompt'=>'Select status...'],
+                    'displayValueConfig'=> [
+                        '0' => '<i class="glyphicon glyphicon-thumbs-down"></i> No',
+                        '1' => '<i class="glyphicon glyphicon-thumbs-up"></i> Si',
+                    ],
+                ]
+            //    
+               // 'visible'=>if()
             ],
             [
                 'attribute'=>'cancelado',

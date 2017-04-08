@@ -67,6 +67,15 @@ class PagoController extends Controller
         $model = new Pago();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if($model->email == 1){
+                Yii::$app->mailer->compose()
+                    ->setFrom('administrador@psycocloud.com.ve')
+                    ->setTo($model->emailPaciente($model->Paciente_idPaciente))
+                    ->setSubject('Registro de Pago')
+                    ->setTextBody('Lo envio')
+                    ->setHtmlBody('<p>Estimado Sr(a).</p><p>Gracias por su pago, he recibido la cantidad de:<b> ' . $model->monto . 'BsF. </b></p>')
+                ->send();
+            }
             return $this->redirect(['view', 'idFactura' => $model->idFactura, 'Paciente_idPaciente' => $model->Paciente_idPaciente]);
         } else {
             return $this->renderAjax('create', [

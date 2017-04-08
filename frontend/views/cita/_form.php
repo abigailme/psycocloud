@@ -15,21 +15,38 @@ use kartik\money\MaskMoney;
 
 <div class="cita-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+            'id' => 'cita-form',
+            'enableAjaxValidation' => false,
+            'enableClientValidation' => true,
+    ]); ?>
 
-    <?= $form->field($model, 'Paciente_idPaciente')->dropDownList($model->listaPaciente, ['prompt'=>'Seleccione un Paciente', 'id' => 'paciente']) ?>
+    <?= $form->field($model, 'Paciente_idPaciente')->dropDownList($model->getListaPaciente(Yii::$app->user->identity->id), ['prompt'=>'Seleccione un Paciente', 'id' => 'paciente']) ?>
 
-    <?= $form->field($model, 'fecha')->widget(DateControl::classname(), [
+    <?= $form->field($model, 'fecha', ['validateOnChange' => true])->widget(\yii\jui\DatePicker::classname(), [
+    'language' => 'es',
+    'dateFormat' => 'yyyy-MM-dd',
+    ]) /*widget(DateControl::classname(), [
     'type'=>DateControl::FORMAT_DATE,
     'ajaxConversion' => true,
     'options' => [
         'pluginOptions' => [
             'autoclose' => true]]
-    ])->label('Escoja la Fecha de la Cita') ?>
+    ])->label('Escoja la Fecha de la Cita')*/ ?>
 
-    <?= $form->field($model, 'hora')->widget(DateControl::classname(), [
+    <?= $form->field($model, 'hora')->widget(\janisto\timepicker\TimePicker::className(), [
+    'language' => 'es',
+    'mode' => 'time',
+    'clientOptions'=>[
+        //'dateFormat' => 'yy-mm-dd',
+        'timeFormat' => 'HH:mm:ss',
+        'showSecond' => true,
+    ]
+        ])/*widget(DateControl::classname(), [
         'type'=>DateControl::FORMAT_TIME,
-        ]) ?>
+        ]) */?>
+
+   
 
     <?= $form->field($model, 'show_up')->checkbox() ?>
 
@@ -41,16 +58,20 @@ use kartik\money\MaskMoney;
                 'data-url' => Url::to(['pago/create']),
                 'data-pjax' => '0',]) ?>
 
+
+
     <?= $form->field($model, 'tarifa', [
             'addon' => [
                 'prepend' => ['content' => 'Bs', 'options' => ['class' => 'alert-success']],
                 'append' => [
-                'content' => Html::a('Editar', ['paciente/update', 'id' => $model->getModeloPaciente($model->Paciente_idPaciente)], ['class' => 'btn btn-success']),
+                'content' => Html::a('Editar', ['paciente/update', 'id' => $model->getModeloPaciente($model->Paciente_idPaciente)],  ['class' => $model->isNewRecord ? 'hidden':'btn btn-success']),
             'asButton'=> true,]]])->textInput(['readonly'=>true])
     ?>
 
+
+
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Editar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Aceptar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -64,7 +85,8 @@ $('#paciente').change(function(){
     var paciente = $(this).val();
     $.get('index.php?r=paciente/get-tarifa', {id : paciente }, function(data){
         var data = $.parseJSON(data);
-        $('#cita-tarifa').attr('value',data.tarifa);    
+        $('#cita-tarifa').attr('value',data.tarifa);  
+        
     });
 
     $(document).on('change', '#activity-index-link', (function() {
@@ -74,6 +96,7 @@ $('#paciente').change(function(){
                         $('.modal-body').html(data);
                         $.get('index.php?r=paciente/get-tarifa', {id : paciente}, function(data){
                             var nombre = $.parseJSON(data);
+                            
                             $('#pago-paciente_idpaciente').attr('value', nombre.idPaciente); 
                             $('#pago-deuda').attr('value', nombre.deuda);
                             $('#pago-nombre').attr('value', nombre.p_nombre);
@@ -97,7 +120,7 @@ $('#activity-index-link').change(function() {
                         var nombre = $.parseJSON(data);
                         $('#pago-paciente_idpaciente').attr('value', nombre.idPaciente);  
                         $('#pago-deuda').attr('value', nombre.deuda);
-                        $('#pago-nombre').attr('value', nombre.p_nombre);
+                       $('#pago-nombre').attr('value', nombre.p_nombre);
                     });
                     $('#modal').modal();
                 }
@@ -108,7 +131,7 @@ $('#activity-index-link').change(function() {
 
 JS;
 
-$this->registerJs($script);
+$this->registerJs($script, View::POS_READY);
 
 Modal::begin([
     'id' => 'modal',

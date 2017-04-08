@@ -12,6 +12,7 @@ use Yii;
  * @property string $apellido
  * @property integer $telefono
  * @property string $email
+ * @property integer $idCreador
  *
  * @property Paciente[] $pacientes
  */
@@ -32,9 +33,11 @@ class Psiquiatra extends \yii\db\ActiveRecord
     {
         return [
             [['nombre'], 'required'],
-            [['telefono'], 'integer'],
+            [['telefono', 'idCreador'], 'integer'],
             [['nombre', 'apellido'], 'string', 'max' => 45],
             [['email'], 'string', 'max' => 100],
+            ['nombre', 'match', 'pattern' => "/^[a-z]+$/i", 'message' => 'Sólo se aceptan letras'],
+            ['apellido', 'match', 'pattern' => "/^[a-z]+$/i", 'message' => 'Sólo se aceptan letras'],
         ];
     }
 
@@ -49,6 +52,7 @@ class Psiquiatra extends \yii\db\ActiveRecord
             'apellido' => 'Apellido',
             'telefono' => 'Telefono',
             'email' => 'Email',
+            'idCreador' => 'Id Creador',
         ];
     }
 

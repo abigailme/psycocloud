@@ -15,12 +15,14 @@ AppAsset::register($this);
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
-<head>
+<head class="header">
+    <div class="container">
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    </div>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -71,9 +73,9 @@ AppAsset::register($this);
 </div>
 
 <footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
-
+    <div class="container" style="padding-right: 200px; padding-left: 200px">
+        <p class="pull-left">&copy; Psycocloud</p>
+        <p>Paciente</p>
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>

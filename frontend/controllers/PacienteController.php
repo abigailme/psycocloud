@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use frontend\controllers\CitaController;
 
 /**
  * PacienteController implements the CRUD actions for Paciente model.
@@ -25,7 +26,7 @@ class PacienteController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
-                ],
+                ],   
             ],
         ];
     }
@@ -52,6 +53,7 @@ class PacienteController extends Controller
      */
     public function actionView($id)
     {
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -65,7 +67,7 @@ class PacienteController extends Controller
     public function actionCreate()
     {
         $model = new Paciente();
-
+        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->idPaciente]);
         } else {
@@ -90,10 +92,17 @@ class PacienteController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idPaciente]);
+        $model = $this->findModel($id);
+        
+        $paciente = new Paciente();
+
+
+
+        if ($paciente->load(Yii::$app->request->post()) && $paciente->save()) {
+            $paciente->getCitasPaciente($id, $paciente->idPaciente);
+            $this->actionDelete($id);
+            return $this->redirect(['view', 'id' => $paciente->idPaciente]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -103,7 +112,7 @@ class PacienteController extends Controller
 
     /**
      * Deletes an existing Paciente model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * If deletion is successful, the brow;ser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
@@ -114,6 +123,27 @@ class PacienteController extends Controller
         return $this->redirect(['index']);
     }
 
+/*    public function beforeUpdate($id){
+        $model = $this->findModel($id);
+
+
+        $paciente['nombre'] = \Yii::$app->encrypter->decrypt($model->p_nombre);
+        $paciente['s_nombre'] = \Yii::$app->encrypter->decrypt($model->s_nombre);
+        $paciente['apellido'] = \Yii::$app->encrypter->decrypt($model->p_apellido);
+        $paciente['s_apellido'] = \Yii::$app->encrypter->decrypt($model->s_apellido);
+        $paciente['cedula'] = \Yii::$app->encrypter->decrypt($model->cedula);
+        $paciente['email'] = \Yii::$app->encrypter->decrypt($model->email);
+        $paciente['motivo_consulta'] = \Yii::$app->encrypter->decrypt($model->motivo_consulta);
+        $paciente['antecedentes'] = \Yii::$app->encrypter->decrypt($model->antecedentes);
+        $paciente['celular'] = \Yii::$app->encrypter->decrypt($model->celular);
+        $paciente['local'] = \Yii::$app->encrypter->decrypt($model->local);
+        $paciente['seudonimo'] = \Yii::$app->encrypter->decrypt($model->seudonimo);
+        $paciente['edad'] = \Yii::$app->encrypter->decrypt($model->edad);
+        $paciente['fecha_nacimiento'] 
+
+        $model->save();
+
+    }
 
     
     /**
@@ -131,4 +161,30 @@ class PacienteController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    //Obtener edad
+    public function actionGetEdad($fecha){
+        $edad = Paciente::calcularEdad($fecha);
+        echo Json::encode($edad);
+    }
+
+    //Cambia la deuda del paciente
+    public function actionCambiarDeuda($id){
+        $model = $this->findModel($id);
+        $model->deuda = 1000;
+        $model->save();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
+
+        echo Json::encode($model);
+    }
+
+
+
 }

@@ -34,10 +34,21 @@ use kartik\form\ActiveForm;
             'alias' => 'email'
     ]])?>
 
+    <?= $form->field($model, 'idCreador')->textInput(['value'=> Yii::$app->user->identity->id]) ?>
+
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Crear' : 'Aceptar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
+
+    <?php
+        $this->registerJs(
+        "
+        $(document).ready(function(){
+            $('div.form-group.field-psiquiatra-idcreador').hide();
+        });
+        "
+        ); ?>
 
 </div>

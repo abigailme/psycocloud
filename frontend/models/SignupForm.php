@@ -12,6 +12,11 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
+    public $role;
+    public $nombre;
+    public $apellido;
+    public $telefono;
+    public $direccion;
 
 
     /**
@@ -22,7 +27,7 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'Este nombre de usuario ya ha sido tomado.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'filter', 'filter' => 'trim'],
@@ -33,6 +38,14 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
+
+            ['role', 'integer'],
+
+            [['nombre', 'apellido'], 'string', 'max' => 15],
+            [['nombre', 'apellido'], 'match', 'pattern' => "/^[a-z]+$/i", 'message' => 'Sólo se aceptan letras'],
+            ['telefono', 'string'],
+            ['direccion', 'string', 'max' => 100],
+
         ];
     }
 
@@ -52,7 +65,12 @@ class SignupForm extends Model
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        
+        $user->role = $this->role;
+        $user->nombre = $this->nombre;
+        $user->apellido = $this->apellido;
+        $user->telefono = $this->telefono;
+        $user->direccion = $this->direccion;
+
         return $user->save() ? $user : null;
     }
 }
